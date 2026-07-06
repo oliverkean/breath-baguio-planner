@@ -19,7 +19,7 @@ npm run test
 npm run build
 ```
 
-## Required For AI Itineraries
+## Required For Provider-Backed Itineraries
 
 Create `.env.local` in the project root:
 
@@ -28,7 +28,7 @@ OPENAI_API_KEY=your_openai_api_key
 OPENAI_MODEL=gpt-5.5
 ```
 
-Without `OPENAI_API_KEY`, `/api/itinerary` uses the local rule-based planner.
+Without `OPENAI_API_KEY`, `/api/itinerary` uses saved planning rules.
 
 ## Admin Login And Roles
 
@@ -62,7 +62,7 @@ ADMIN_PASSWORD=replace_with_a_strong_password
 SESSION_SECRET=replace_with_at_least_32_random_characters
 ```
 
-Generate a local session secret with PowerShell:
+Create a local session secret with PowerShell:
 
 ```powershell
 [Convert]::ToBase64String((1..32 | ForEach-Object { Get-Random -Maximum 256 }))
@@ -109,7 +109,7 @@ Mapbox:
 NEXT_PUBLIC_MAPBOX_TOKEN=your_mapbox_token
 ```
 
-The current MVP uses a lightweight route visualization. Add a dedicated map component before using real geocoding or route APIs.
+The current app uses lightweight map links. Add a dedicated map component before using real geocoding or route APIs.
 
 ## GitHub And Deployment
 

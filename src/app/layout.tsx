@@ -23,7 +23,7 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Breathe Baguio Planner",
   description:
-    "AI-assisted sustainable tourism planner for Baguio itineraries, crowd scoring, car-light routing, and admin advisories.",
+    "Sustainable Baguio trip planner with crowd scoring, car-light routing, and low-waste travel reminders.",
   icons: {
     icon: "/favicon.ico",
     shortcut: "/favicon.ico",

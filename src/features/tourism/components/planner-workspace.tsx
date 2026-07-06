@@ -10,7 +10,6 @@ import {
   LeafIcon,
   MapPinnedIcon,
   RouteIcon,
-  SparklesIcon,
   TreesIcon,
   UtensilsIcon,
 } from "lucide-react"
@@ -60,7 +59,7 @@ const interestOptions = [
   { label: "Parks", value: "parks", icon: TreesIcon },
   { label: "Food", value: "food", icon: UtensilsIcon },
   { label: "Culture", value: "culture", icon: MapPinnedIcon },
-  { label: "Art", value: "art", icon: SparklesIcon },
+  { label: "Art", value: "art", icon: MapPinnedIcon },
   { label: "Budget", value: "budget", icon: CheckIcon },
 ]
 
@@ -107,7 +106,7 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
     setRequest((current) => ({ ...current, ...patch }))
   }
 
-  function generateItinerary() {
+  function planTrip() {
     startTransition(async () => {
       try {
         const response = await fetch("/api/itinerary", {
@@ -122,11 +121,11 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
 
         const result = (await response.json()) as ItineraryResult
         setItinerary(result)
-        toast.success(result.source === "openai" ? "AI itinerary generated" : "Local itinerary generated")
+        toast.success("Itinerary ready")
       } catch (error) {
         const result = generateLocalItinerary(request, tourismData)
         setItinerary(result)
-        toast.warning(error instanceof Error ? error.message : "Using local planner fallback")
+        toast.warning(error instanceof Error ? error.message : "Using saved planning rules")
       }
     })
   }
@@ -193,7 +192,7 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
             <PlannerForm
               isPending={isPending}
               request={request}
-              onGenerate={generateItinerary}
+              onPlan={planTrip}
               onInterestToggle={toggleInterest}
               onUpdate={updateRequest}
             />
@@ -238,13 +237,13 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
 function PlannerForm({
   isPending,
   request,
-  onGenerate,
+  onPlan,
   onInterestToggle,
   onUpdate,
 }: {
   isPending: boolean
   request: ItineraryRequest
-  onGenerate: () => void
+  onPlan: () => void
   onInterestToggle: (value: string) => void
   onUpdate: (patch: Partial<ItineraryRequest>) => void
 }) {
@@ -342,9 +341,9 @@ function PlannerForm({
             </div>
           </FieldSet>
 
-          <Button className="w-full" disabled={isPending} onClick={onGenerate}>
-            <SparklesIcon data-icon="inline-start" />
-            {isPending ? "Generating" : "Generate itinerary"}
+          <Button className="w-full" disabled={isPending} onClick={onPlan}>
+            <RouteIcon data-icon="inline-start" />
+            {isPending ? "Planning" : "Plan trip"}
           </Button>
         </FieldGroup>
       </CardContent>
@@ -361,7 +360,7 @@ function PlanPreview({ itinerary }: { itinerary: ItineraryResult }) {
         <div>
           <CardTitle>Your plan</CardTitle>
           <CardDescription>
-            {itinerary.source === "openai" ? "AI-assisted" : "Local rules"} itinerary preview
+            {itinerary.source === "openai" ? "Planner service" : "Planning rules"} preview
           </CardDescription>
         </div>
         <CardAction>
