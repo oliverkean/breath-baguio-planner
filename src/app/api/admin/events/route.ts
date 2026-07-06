@@ -6,20 +6,23 @@ const crowdLevels = new Set<CrowdLevel>(["low", "moderate", "high", "critical"])
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin()
+    const user = await requireAdmin()
     const body = (await request.json()) as Record<string, unknown>
     const name = requiredString(body.name, "name")
     const startsOn = requiredString(body.startsOn, "startsOn")
     const endsOn = optionalString(body.endsOn, startsOn)
     const impact = optionalCrowdLevel(body.impact)
 
-    const record = await createTourismEvent({
-      name,
-      startsOn,
-      endsOn,
-      impact,
-      notes: optionalString(body.notes, "Admin event needs source verification."),
-    })
+    const record = await createTourismEvent(
+      {
+        name,
+        startsOn,
+        endsOn,
+        impact,
+        notes: optionalString(body.notes, "Admin event needs source verification."),
+      },
+      { userId: user.id },
+    )
 
     return Response.json({ record }, { status: 201 })
   } catch (error) {

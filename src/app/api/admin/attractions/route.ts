@@ -6,7 +6,7 @@ const crowdLevels = new Set<CrowdLevel>(["low", "moderate", "high", "critical"])
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin()
+    const user = await requireAdmin()
     const body = (await request.json()) as Record<string, unknown>
     const name = requiredString(body.name, "name")
     const district = requiredString(body.district, "district")
@@ -16,17 +16,20 @@ export async function POST(request: Request) {
     const durationHours = optionalNumber(body.durationHours, 2)
     const tags = parseTags(body.tags)
 
-    const record = await createAttraction({
-      name,
-      district,
-      location,
-      openingHours,
-      tags,
-      baselineCrowd,
-      carFreeHint: optionalString(body.carFreeHint, "Verify car-free access guidance before publishing."),
-      wasteReminder: optionalString(body.wasteReminder, "Confirm waste guidance before publishing."),
-      durationHours,
-    })
+    const record = await createAttraction(
+      {
+        name,
+        district,
+        location,
+        openingHours,
+        tags,
+        baselineCrowd,
+        carFreeHint: optionalString(body.carFreeHint, "Verify car-free access guidance before publishing."),
+        wasteReminder: optionalString(body.wasteReminder, "Confirm waste guidance before publishing."),
+        durationHours,
+      },
+      { userId: user.id },
+    )
 
     return Response.json({ record }, { status: 201 })
   } catch (error) {

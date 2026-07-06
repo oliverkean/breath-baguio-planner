@@ -79,6 +79,7 @@ Returns seed attractions, events, advisories, and crowd rules.
 - Crowd score is a planning heuristic, not a city-approved capacity model.
 - Admin writes require an `admin` session and persist to Supabase Postgres. Supabase-backed admin sessions re-check `user_roles` during protected access.
 - Admin access is intentionally not linked from the public tourist navigation. Staff enter through `/admin`, which redirects unauthenticated users to `/login?next=/admin`.
+- Supabase-backed admin writes populate nullable `created_by` and `updated_by` audit columns. Local env fallback sessions do not have a UUID actor and leave those fields empty.
 - OpenAI output is constrained by prompt and JSON mode, but still requires server-side validation before production.
 - Map visuals are illustrative. Production route planning needs a proper maps provider and transport data.
 - Login rate limiting is in-memory and best effort. Use a durable shared store before scaling across server instances.
@@ -93,7 +94,6 @@ Returns seed attractions, events, advisories, and crowd rules.
 
 ## Follow-Up Design
 
-1. Add audit fields that record which admin created or updated tourism records.
-2. Validate itinerary requests with a schema library such as Zod.
-3. Validate AI JSON against the same response contract.
-4. Add telemetry for fallback rate, generation latency, and invalid AI output.
+1. Validate itinerary requests with a schema library such as Zod.
+2. Validate AI JSON against the same response contract.
+3. Add telemetry for fallback rate, generation latency, and invalid AI output.

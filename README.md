@@ -16,6 +16,7 @@ Baguio has an official tourism portal, [VISITA](https://visita.baguio.gov.ph/), 
 - Attraction cards with location, opening hours, tags, car-free guidance, and waste reminders.
 - Protected admin dashboard for adding attractions, events, advisories, and crowd rules.
 - Supabase Postgres persistence through Drizzle ORM, with Supabase Auth role checks for admins.
+- Nullable audit fields for Supabase-backed admin-created tourism records.
 
 ## Run Locally
 
@@ -25,6 +26,14 @@ npm run dev
 ```
 
 Open `http://localhost:3000`.
+
+Run local checks with:
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
 
 ## Environment
 
@@ -82,7 +91,7 @@ Backend thinking order used here:
 6. Side effects: OpenAI call isolated to the route handler.
 7. Edge cases: missing API key, invalid JSON, failed OpenAI response.
 8. Observability: route returns assumptions explaining source/fallback.
-9. Tests: current validation is build/lint plus manual UI checks; add unit tests before production use.
+9. Tests: Vitest coverage exists for crowd scoring, login rate limiting, login API behavior, and admin write authorization.
 
 ## Data Sources And References
 
@@ -95,8 +104,7 @@ Backend thinking order used here:
 ## Production Gaps
 
 - Replace seed data with verified VISITA/city tourism data or an approved city-maintained dataset.
-- Add audit fields for admin changes.
 - Add Mapbox or Google Maps for actual route visualization.
 - Add Philippine holiday and Panagbenga calendars from maintained sources.
 - Add durable distributed rate limiting and structured logging for itinerary generation.
-- Add unit tests for crowd scoring and integration tests for route handlers.
+- Expand tests around itinerary generation, AI response validation, and full authenticated admin workflows.

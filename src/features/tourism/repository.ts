@@ -11,6 +11,9 @@ type AttractionInput = Omit<Attraction, "id">
 type TourismEventInput = Omit<TourismEvent, "id">
 type AdvisoryInput = Omit<Advisory, "id">
 type CrowdRuleInput = Omit<CrowdRule, "id">
+type AuditActor = {
+  userId: string
+}
 
 export async function getTourismData(): Promise<TourismData> {
   const db = getDb()
@@ -43,8 +46,9 @@ export async function getTourismData(): Promise<TourismData> {
   }
 }
 
-export async function createAttraction(input: AttractionInput) {
+export async function createAttraction(input: AttractionInput, actor?: AuditActor) {
   const db = requireDb()
+  const actorId = toAuditUserId(actor?.userId)
   const [record] = await db
     .insert(attractions)
     .values({
@@ -58,14 +62,17 @@ export async function createAttraction(input: AttractionInput) {
       carFreeHint: input.carFreeHint,
       wasteReminder: input.wasteReminder,
       durationHours: String(input.durationHours),
+      createdBy: actorId,
+      updatedBy: actorId,
     })
     .returning()
 
   return mapAttraction(record)
 }
 
-export async function createTourismEvent(input: TourismEventInput) {
+export async function createTourismEvent(input: TourismEventInput, actor?: AuditActor) {
   const db = requireDb()
+  const actorId = toAuditUserId(actor?.userId)
   const [record] = await db
     .insert(tourismEvents)
     .values({
@@ -75,14 +82,17 @@ export async function createTourismEvent(input: TourismEventInput) {
       endsOn: input.endsOn,
       impact: input.impact,
       notes: input.notes,
+      createdBy: actorId,
+      updatedBy: actorId,
     })
     .returning()
 
   return mapTourismEvent(record)
 }
 
-export async function createAdvisory(input: AdvisoryInput) {
+export async function createAdvisory(input: AdvisoryInput, actor?: AuditActor) {
   const db = requireDb()
+  const actorId = toAuditUserId(actor?.userId)
   const [record] = await db
     .insert(advisories)
     .values({
@@ -90,20 +100,25 @@ export async function createAdvisory(input: AdvisoryInput) {
       severity: input.severity,
       area: input.area,
       message: input.message,
+      createdBy: actorId,
+      updatedBy: actorId,
     })
     .returning()
 
   return mapAdvisory(record)
 }
 
-export async function createCrowdRule(input: CrowdRuleInput) {
+export async function createCrowdRule(input: CrowdRuleInput, actor?: AuditActor) {
   const db = requireDb()
+  const actorId = toAuditUserId(actor?.userId)
   const [record] = await db
     .insert(crowdRules)
     .values({
       label: input.label,
       condition: input.condition,
       scoreImpact: input.scoreImpact,
+      createdBy: actorId,
+      updatedBy: actorId,
     })
     .returning()
 
@@ -176,4 +191,12 @@ function slugify(value: string) {
     .replace(/(^-|-$)/g, "")
 
   return slug || "tourism-record"
+}
+
+function toAuditUserId(userId: string | undefined) {
+  if (!userId || userId === "env-admin") {
+    return null
+  }
+
+  return userId
 }

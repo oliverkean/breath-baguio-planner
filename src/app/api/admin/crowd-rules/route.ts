@@ -3,7 +3,7 @@ import { requireAdmin } from "@/features/auth/session"
 
 export async function POST(request: Request) {
   try {
-    await requireAdmin()
+    const user = await requireAdmin()
     const body = (await request.json()) as Record<string, unknown>
     const label = requiredString(body.label, "label")
     const condition = requiredString(body.condition, "condition")
@@ -13,11 +13,14 @@ export async function POST(request: Request) {
       throw new Error("scoreImpact must be a number between -100 and 100.")
     }
 
-    const record = await createCrowdRule({
-      label,
-      condition,
-      scoreImpact,
-    })
+    const record = await createCrowdRule(
+      {
+        label,
+        condition,
+        scoreImpact,
+      },
+      { userId: user.id },
+    )
 
     return Response.json({ record }, { status: 201 })
   } catch (error) {

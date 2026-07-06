@@ -11,6 +11,14 @@ npm run dev
 
 Open `http://localhost:3000`.
 
+Run validation checks with:
+
+```bash
+npm run lint
+npm run test
+npm run build
+```
+
 ## Required For AI Itineraries
 
 Create `.env.local` in the project root:
