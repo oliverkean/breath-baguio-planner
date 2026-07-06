@@ -80,6 +80,7 @@ Returns seed attractions, events, advisories, and crowd rules.
 - Admin writes require an `admin` session and persist to Supabase Postgres. Supabase-backed admin sessions re-check `user_roles` during protected access.
 - Admin access is intentionally not linked from the public tourist navigation. Staff enter through `/admin`, which redirects unauthenticated users to `/login?next=/admin`.
 - Supabase-backed admin writes populate nullable `created_by` and `updated_by` audit columns. Local env fallback sessions do not have a UUID actor and leave those fields empty.
+- Attractions, events, and advisories carry nullable source name/URL fields. VISITA is treated as the official portal, but records should be curated through admin workflows or an approved feed rather than scraped from undocumented endpoints.
 - OpenAI output is constrained by prompt and JSON mode, but still requires server-side validation before production.
 - Map visuals are illustrative. Production route planning needs a proper maps provider and transport data.
 - Login rate limiting is in-memory and best effort. Use a durable shared store before scaling across server instances.

@@ -15,6 +15,8 @@ export type Attraction = {
   carFreeHint: string
   wasteReminder: string
   durationHours: number
+  sourceName?: string
+  sourceUrl?: string
 }
 
 export type TourismEvent = {
@@ -24,6 +26,8 @@ export type TourismEvent = {
   endsOn: string
   impact: CrowdLevel
   notes: string
+  sourceName?: string
+  sourceUrl?: string
 }
 
 export type Advisory = {
@@ -32,6 +36,8 @@ export type Advisory = {
   severity: "info" | "warning" | "urgent"
   area: string
   message: string
+  sourceName?: string
+  sourceUrl?: string
 }
 
 export type CrowdRule = {

@@ -49,6 +49,8 @@ export function AdminWorkspace({
         carFreeHint: "Verify car-free access guidance before publishing.",
         wasteReminder: "Confirm waste guidance before publishing.",
         durationHours: 2,
+        sourceName: String(form.get("sourceName") || "").trim(),
+        sourceUrl: String(form.get("sourceUrl") || "").trim(),
       })
 
       setTourismData((current) => ({
@@ -82,6 +84,8 @@ export function AdminWorkspace({
         endsOn,
         impact: "high",
         notes: String(form.get("notes") || "Admin event needs source verification.").trim(),
+        sourceName: String(form.get("sourceName") || "").trim(),
+        sourceUrl: String(form.get("sourceUrl") || "").trim(),
       })
 
       setTourismData((current) => ({
@@ -113,6 +117,8 @@ export function AdminWorkspace({
         area,
         severity: "warning",
         message: String(form.get("message") || "Admin advisory pending review.").trim(),
+        sourceName: String(form.get("sourceName") || "").trim(),
+        sourceUrl: String(form.get("sourceUrl") || "").trim(),
       })
 
       setTourismData((current) => ({
@@ -212,6 +218,8 @@ function AdminDashboard({
           <AdminInput label="Location" name="location" placeholder="Exact address or landmark" />
           <AdminInput label="Opening hours" name="openingHours" placeholder="8:00 AM - 5:00 PM" />
           <AdminInput label="Tags" name="tags" placeholder="nature, culture, walkable" />
+          <AdminInput label="Source name" name="sourceName" placeholder="Baguio VISITA" />
+          <AdminInput label="Source URL" name="sourceUrl" placeholder="https://visita.baguio.gov.ph/..." />
         </AdminFormCard>
 
         <AdminFormCard title="Add event" onSubmit={onAddEvent}>
@@ -221,12 +229,16 @@ function AdminDashboard({
             <AdminInput label="Ends on" name="endsOn" type="date" />
           </div>
           <AdminInput label="Notes" name="notes" placeholder="Road closure or demand note" />
+          <AdminInput label="Source name" name="sourceName" placeholder="PNA / Panagbenga" />
+          <AdminInput label="Source URL" name="sourceUrl" placeholder="https://..." />
         </AdminFormCard>
 
         <AdminFormCard title="Add advisory" onSubmit={onAddAdvisory}>
           <AdminInput label="Title" name="title" placeholder="Avoid CBD parking" />
           <AdminInput label="Area" name="area" placeholder="Session Road" />
           <AdminInput label="Message" name="message" placeholder="Use walkable transfer points." />
+          <AdminInput label="Source name" name="sourceName" placeholder="City advisory" />
+          <AdminInput label="Source URL" name="sourceUrl" placeholder="https://..." />
         </AdminFormCard>
 
         <AdminFormCard title="Add crowd rule" onSubmit={onAddCrowdRule}>

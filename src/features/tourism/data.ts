@@ -1,5 +1,20 @@
 import type { TourismData } from "./types"
 
+const visitaSource = {
+  sourceName: "Baguio VISITA official portal",
+  sourceUrl: "https://visita.baguio.gov.ph/",
+}
+
+const pnaHolidaySource = {
+  sourceName: "Philippine News Agency / Proclamation 1006",
+  sourceUrl: "https://www.pna.gov.ph/articles/1258046",
+}
+
+const panagbengaSource = {
+  sourceName: "Panagbenga official schedule",
+  sourceUrl: "https://www.panagbengaflowerfestival.com/event-directory/",
+}
+
 export const tourismData: TourismData = {
   attractions: [
     {
@@ -13,6 +28,7 @@ export const tourismData: TourismData = {
       carFreeHint: "Walk from Session Road or use taxis only for drop-off outside peak hours.",
       wasteReminder: "Use refillable bottles and avoid disposable picnic packaging.",
       durationHours: 2,
+      ...visitaSource,
     },
     {
       id: "botanical-garden",
@@ -25,6 +41,7 @@ export const tourismData: TourismData = {
       carFreeHint: "Pair with Wright Park and walk between nearby stops.",
       wasteReminder: "Keep food waste sealed and use designated bins only.",
       durationHours: 2,
+      ...visitaSource,
     },
     {
       id: "mines-view",
@@ -37,6 +54,7 @@ export const tourismData: TourismData = {
       carFreeHint: "Avoid driving to the viewpoint; use public transport and visit early.",
       wasteReminder: "Refuse single-use bags when buying souvenirs.",
       durationHours: 1.5,
+      ...visitaSource,
     },
     {
       id: "ben-cab",
@@ -49,6 +67,7 @@ export const tourismData: TourismData = {
       carFreeHint: "Book shared transport or taxi pooling because Asin Road is outside the walkable core.",
       wasteReminder: "Carry out snack wrappers and avoid disposable cafe items.",
       durationHours: 2.5,
+      ...visitaSource,
     },
     {
       id: "session-road",
@@ -61,6 +80,7 @@ export const tourismData: TourismData = {
       carFreeHint: "Leave the car parked; Session Road is best handled on foot.",
       wasteReminder: "Choose dine-in where possible and bring a small reusable bag.",
       durationHours: 2,
+      ...visitaSource,
     },
     {
       id: "camp-john-hay",
@@ -73,6 +93,7 @@ export const tourismData: TourismData = {
       carFreeHint: "Use a single drop-off and walk inside the estate to reduce short car hops.",
       wasteReminder: "Bring back all trail litter and avoid disposable coffee cups.",
       durationHours: 3,
+      ...visitaSource,
     },
   ],
   events: [
@@ -83,14 +104,133 @@ export const tourismData: TourismData = {
       endsOn: "2026-03-08",
       impact: "critical",
       notes: "Festival season usually raises road closures, crowding, and accommodation pressure.",
+      ...panagbengaSource,
     },
     {
-      id: "sample-long-weekend",
-      name: "Sample Long Weekend Surge",
-      startsOn: "2026-08-21",
-      endsOn: "2026-08-24",
+      id: "panagbenga-grand-street-dance",
+      name: "Panagbenga Grand Street Dance Parade",
+      startsOn: "2026-02-28",
+      endsOn: "2026-02-28",
+      impact: "critical",
+      notes: "Major parade day; avoid private-car trips into central event corridors.",
+      ...panagbengaSource,
+    },
+    {
+      id: "panagbenga-grand-floral-float",
+      name: "Panagbenga Grand Floral Float Parade",
+      startsOn: "2026-03-01",
+      endsOn: "2026-03-01",
+      impact: "critical",
+      notes: "Major parade day; use car-light plans and early arrival windows.",
+      ...panagbengaSource,
+    },
+    {
+      id: "session-road-in-bloom",
+      name: "Session Road in Bloom",
+      startsOn: "2026-03-02",
+      endsOn: "2026-03-08",
+      impact: "critical",
+      notes: "Session Road activity window; prioritize walking and avoid CBD parking.",
+      ...panagbengaSource,
+    },
+    {
+      id: "new-year-2026",
+      name: "New Year's Day holiday",
+      startsOn: "2026-01-01",
+      endsOn: "2026-01-04",
       impact: "high",
-      notes: "Use as an admin-editable rule for holiday or long-weekend demand.",
+      notes: "Regular holiday and adjacent weekend likely increase leisure travel demand.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "chinese-new-year-2026",
+      name: "Chinese New Year special non-working day",
+      startsOn: "2026-02-17",
+      endsOn: "2026-02-17",
+      impact: "high",
+      notes: "Special non-working day during Panagbenga season.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "holy-week-2026",
+      name: "Holy Week holiday window",
+      startsOn: "2026-04-02",
+      endsOn: "2026-04-05",
+      impact: "critical",
+      notes: "Maundy Thursday, Good Friday, Black Saturday, and weekend travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "labor-day-weekend-2026",
+      name: "Labor Day long weekend",
+      startsOn: "2026-05-01",
+      endsOn: "2026-05-03",
+      impact: "high",
+      notes: "Regular Friday holiday creates a three-day leisure travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "independence-day-weekend-2026",
+      name: "Independence Day long weekend",
+      startsOn: "2026-06-12",
+      endsOn: "2026-06-14",
+      impact: "high",
+      notes: "Regular Friday holiday creates a three-day leisure travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "ninoy-aquino-weekend-2026",
+      name: "Ninoy Aquino Day long weekend",
+      startsOn: "2026-08-21",
+      endsOn: "2026-08-23",
+      impact: "high",
+      notes: "Friday special non-working day creates a three-day domestic travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "national-heroes-day-2026",
+      name: "National Heroes Day holiday",
+      startsOn: "2026-08-29",
+      endsOn: "2026-08-31",
+      impact: "high",
+      notes: "Last Monday of August holiday creates a three-day travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "all-saints-all-souls-2026",
+      name: "All Saints and All Souls holiday window",
+      startsOn: "2026-10-31",
+      endsOn: "2026-11-02",
+      impact: "high",
+      notes: "Holiday period is associated with family travel and domestic tourism.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "bonifacio-day-weekend-2026",
+      name: "Bonifacio Day long weekend",
+      startsOn: "2026-11-28",
+      endsOn: "2026-11-30",
+      impact: "high",
+      notes: "Monday regular holiday creates a three-day leisure travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "christmas-holiday-window-2026",
+      name: "Christmas holiday window",
+      startsOn: "2026-12-24",
+      endsOn: "2026-12-27",
+      impact: "critical",
+      notes: "Christmas Eve, Christmas Day, and weekend travel window.",
+      ...pnaHolidaySource,
+    },
+    {
+      id: "rizal-new-year-window-2026",
+      name: "Rizal Day and year-end holiday window",
+      startsOn: "2026-12-30",
+      endsOn: "2027-01-03",
+      impact: "critical",
+      notes: "Rizal Day, Last Day of the Year, New Year's Day, and weekend travel window.",
+      ...pnaHolidaySource,
     },
   ],
   advisories: [
@@ -100,6 +240,7 @@ export const tourismData: TourismData = {
       severity: "warning",
       area: "Burnham Park, Session Road, public market",
       message: "Use walking links, taxis, or jeepney routes for central stops during peak periods.",
+      ...visitaSource,
     },
     {
       id: "bring-reusables",
@@ -107,6 +248,7 @@ export const tourismData: TourismData = {
       severity: "info",
       area: "Citywide",
       message: "Carry a tumbler, reusable utensils, and a small trash pouch for low-waste touring.",
+      sourceName: "Breathe Baguio circular-tourism guidance",
     },
     {
       id: "capacity-sensitive",
@@ -114,6 +256,7 @@ export const tourismData: TourismData = {
       severity: "urgent",
       area: "High-traffic attractions",
       message: "Shift popular stops to early mornings and avoid stacking congested attractions on the same day.",
+      sourceName: "Breathe Baguio carrying-capacity guidance",
     },
   ],
   crowdRules: [

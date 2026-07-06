@@ -20,6 +20,8 @@ export async function POST(request: Request) {
         endsOn,
         impact,
         notes: optionalString(body.notes, "Admin event needs source verification."),
+        sourceName: optionalSourceString(body.sourceName),
+        sourceUrl: optionalSourceString(body.sourceUrl),
       },
       { userId: user.id },
     )
@@ -40,6 +42,10 @@ function requiredString(value: unknown, field: string) {
 
 function optionalString(value: unknown, fallback: string) {
   return typeof value === "string" && value.trim() ? value.trim() : fallback
+}
+
+function optionalSourceString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined
 }
 
 function optionalCrowdLevel(value: unknown): CrowdLevel {

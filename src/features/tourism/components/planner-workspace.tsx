@@ -6,6 +6,7 @@ import {
   BikeIcon,
   CalendarDaysIcon,
   CarIcon,
+  ExternalLinkIcon,
   GaugeIcon,
   LeafIcon,
   MapPinnedIcon,
@@ -494,6 +495,28 @@ function AttractionsGrid({ attractions }: { attractions: Attraction[] }) {
             <Separator />
             <p className="text-sm text-muted-foreground">{attraction.carFreeHint}</p>
             <p className="text-sm text-muted-foreground">{attraction.wasteReminder}</p>
+            <div className="flex flex-wrap gap-2 text-sm">
+              <a
+                className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+                href={mapSearchUrl(attraction)}
+                rel="noreferrer"
+                target="_blank"
+              >
+                Open map
+                <ExternalLinkIcon className="size-3.5" />
+              </a>
+              {attraction.sourceUrl && (
+                <a
+                  className="inline-flex items-center gap-1 text-primary underline-offset-4 hover:underline"
+                  href={attraction.sourceUrl}
+                  rel="noreferrer"
+                  target="_blank"
+                >
+                  {attraction.sourceName || "Source"}
+                  <ExternalLinkIcon className="size-3.5" />
+                </a>
+              )}
+            </div>
           </CardContent>
         </Card>
       ))}
@@ -554,6 +577,14 @@ function CrowdCalendar({ data, request }: { data: TourismData; request: Itinerar
         title="Active advisories"
         items={data.advisories.map((advisory) => `${advisory.area}: ${advisory.message}`)}
       />
+      <GuidanceCard
+        icon={CalendarDaysIcon}
+        title="Source-backed events"
+        items={data.events
+          .filter((event) => event.sourceName)
+          .slice(0, 5)
+          .map((event) => `${event.startsOn}: ${event.name} (${event.sourceName})`)}
+      />
     </div>
   )
 }
@@ -596,4 +627,10 @@ function Metric({ label, value }: { label: string; value: number }) {
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   )
+}
+
+function mapSearchUrl(attraction: Attraction) {
+  const query = encodeURIComponent(`${attraction.name}, ${attraction.location}, Baguio City, Philippines`)
+
+  return `https://www.google.com/maps/search/?api=1&query=${query}`
 }

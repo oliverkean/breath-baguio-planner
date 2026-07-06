@@ -20,6 +20,8 @@ async function main() {
   })
   const db = drizzle(pool)
 
+  await db.delete(tourismEvents).where(eq(tourismEvents.slug, "sample-long-weekend"))
+
   for (const attraction of tourismData.attractions) {
     await db
       .insert(attractions)
@@ -34,8 +36,26 @@ async function main() {
         carFreeHint: attraction.carFreeHint,
         wasteReminder: attraction.wasteReminder,
         durationHours: String(attraction.durationHours),
+        sourceName: attraction.sourceName,
+        sourceUrl: attraction.sourceUrl,
       })
-      .onConflictDoNothing({ target: attractions.slug })
+      .onConflictDoUpdate({
+        target: attractions.slug,
+        set: {
+          name: attraction.name,
+          district: attraction.district,
+          location: attraction.location,
+          openingHours: attraction.openingHours,
+          tags: attraction.tags,
+          baselineCrowd: attraction.baselineCrowd,
+          carFreeHint: attraction.carFreeHint,
+          wasteReminder: attraction.wasteReminder,
+          durationHours: String(attraction.durationHours),
+          sourceName: attraction.sourceName,
+          sourceUrl: attraction.sourceUrl,
+          updatedAt: new Date(),
+        },
+      })
   }
 
   for (const event of tourismData.events) {
@@ -48,8 +68,22 @@ async function main() {
         endsOn: event.endsOn,
         impact: event.impact,
         notes: event.notes,
+        sourceName: event.sourceName,
+        sourceUrl: event.sourceUrl,
       })
-      .onConflictDoNothing({ target: tourismEvents.slug })
+      .onConflictDoUpdate({
+        target: tourismEvents.slug,
+        set: {
+          name: event.name,
+          startsOn: event.startsOn,
+          endsOn: event.endsOn,
+          impact: event.impact,
+          notes: event.notes,
+          sourceName: event.sourceName,
+          sourceUrl: event.sourceUrl,
+          updatedAt: new Date(),
+        },
+      })
   }
 
   for (const advisory of tourismData.advisories) {
@@ -65,7 +99,20 @@ async function main() {
         severity: advisory.severity,
         area: advisory.area,
         message: advisory.message,
+        sourceName: advisory.sourceName,
+        sourceUrl: advisory.sourceUrl,
       })
+    } else {
+      await db
+        .update(advisories)
+        .set({
+          severity: advisory.severity,
+          message: advisory.message,
+          sourceName: advisory.sourceName,
+          sourceUrl: advisory.sourceUrl,
+          updatedAt: new Date(),
+        })
+        .where(eq(advisories.id, existing[0].id))
     }
   }
 

@@ -17,6 +17,7 @@ Baguio has an official tourism portal, [VISITA](https://visita.baguio.gov.ph/), 
 - Protected admin dashboard for adding attractions, events, advisories, and crowd rules.
 - Supabase Postgres persistence through Drizzle ORM, with Supabase Auth role checks for admins.
 - Nullable audit fields for Supabase-backed admin-created tourism records.
+- Source attribution fields for attractions, holiday/event pressure windows, and advisories.
 
 ## Run Locally
 
@@ -95,6 +96,8 @@ Backend thinking order used here:
 
 ## Data Sources And References
 
+Data-source decisions and map/geocoding constraints are documented in `docs/data-sources.md`.
+
 - [Baguio VISITA official portal](https://visita.baguio.gov.ph/)
 - [UNDP Philippines: Baguio circular tourism](https://www.undp.org/philippines/press-releases/baguio-city-advances-circular-tourism-reduce-waste-manage-growth-and-build-resilience)
 - [UP CIDS policy brief PDF on Baguio carrying capacity](https://cids.up.edu.ph/wp-content/uploads/2025/06/Recommendations-on-Baguio-Citys-Carrying-Capacity.pdf)
@@ -103,7 +106,7 @@ Backend thinking order used here:
 
 ## Production Gaps
 
-- Replace seed data with verified VISITA/city tourism data or an approved city-maintained dataset.
+- Replace curated source-backed starter records with an approved VISITA/city-maintained feed when one is available.
 - Add Mapbox or Google Maps for actual route visualization.
 - Add Philippine holiday and Panagbenga calendars from maintained sources.
 - Add durable distributed rate limiting and structured logging for itinerary generation.

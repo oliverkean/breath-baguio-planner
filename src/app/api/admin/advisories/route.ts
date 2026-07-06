@@ -17,6 +17,8 @@ export async function POST(request: Request) {
         area,
         severity: optionalSeverity(body.severity),
         message: optionalString(body.message, "Admin advisory pending review."),
+        sourceName: optionalSourceString(body.sourceName),
+        sourceUrl: optionalSourceString(body.sourceUrl),
       },
       { userId: user.id },
     )
@@ -37,6 +39,10 @@ function requiredString(value: unknown, field: string) {
 
 function optionalString(value: unknown, fallback: string) {
   return typeof value === "string" && value.trim() ? value.trim() : fallback
+}
+
+function optionalSourceString(value: unknown) {
+  return typeof value === "string" && value.trim() ? value.trim() : undefined
 }
 
 function optionalSeverity(value: unknown): Advisory["severity"] {

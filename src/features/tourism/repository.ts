@@ -62,6 +62,8 @@ export async function createAttraction(input: AttractionInput, actor?: AuditActo
       carFreeHint: input.carFreeHint,
       wasteReminder: input.wasteReminder,
       durationHours: String(input.durationHours),
+      sourceName: input.sourceName,
+      sourceUrl: input.sourceUrl,
       createdBy: actorId,
       updatedBy: actorId,
     })
@@ -82,6 +84,8 @@ export async function createTourismEvent(input: TourismEventInput, actor?: Audit
       endsOn: input.endsOn,
       impact: input.impact,
       notes: input.notes,
+      sourceName: input.sourceName,
+      sourceUrl: input.sourceUrl,
       createdBy: actorId,
       updatedBy: actorId,
     })
@@ -100,6 +104,8 @@ export async function createAdvisory(input: AdvisoryInput, actor?: AuditActor) {
       severity: input.severity,
       area: input.area,
       message: input.message,
+      sourceName: input.sourceName,
+      sourceUrl: input.sourceUrl,
       createdBy: actorId,
       updatedBy: actorId,
     })
@@ -147,6 +153,8 @@ function mapAttraction(row: typeof attractions.$inferSelect): Attraction {
     carFreeHint: row.carFreeHint,
     wasteReminder: row.wasteReminder,
     durationHours: Number(row.durationHours),
+    sourceName: row.sourceName ?? undefined,
+    sourceUrl: row.sourceUrl ?? undefined,
   }
 }
 
@@ -158,6 +166,8 @@ function mapTourismEvent(row: typeof tourismEvents.$inferSelect): TourismEvent {
     endsOn: row.endsOn,
     impact: row.impact,
     notes: row.notes,
+    sourceName: row.sourceName ?? undefined,
+    sourceUrl: row.sourceUrl ?? undefined,
   }
 }
 
@@ -168,6 +178,8 @@ function mapAdvisory(row: typeof advisories.$inferSelect): Advisory {
     severity: row.severity,
     area: row.area,
     message: row.message,
+    sourceName: row.sourceName ?? undefined,
+    sourceUrl: row.sourceUrl ?? undefined,
   }
 }
 

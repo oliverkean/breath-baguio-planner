@@ -22,6 +22,13 @@
       "when": 1783311330057,
       "tag": "0002_lethal_mephistopheles",
       "breakpoints": true
+    },
+    {
+      "idx": 3,
+      "version": "7",
+      "when": 1783312019476,
+      "tag": "0003_glossy_lightspeed",
+      "breakpoints": true
     }
   ]
 }
