@@ -78,6 +78,7 @@ Returns seed attractions, events, advisories, and crowd rules.
 - Seed attractions and advisories are demo data. Do not treat them as verified official records.
 - Crowd score is a planning heuristic, not a city-approved capacity model.
 - Admin writes require an `admin` session and persist to Supabase Postgres. Supabase-backed admin sessions re-check `user_roles` during protected access.
+- Admin access is intentionally not linked from the public tourist navigation. Staff enter through `/admin`, which redirects unauthenticated users to `/login?next=/admin`.
 - OpenAI output is constrained by prompt and JSON mode, but still requires server-side validation before production.
 - Map visuals are illustrative. Production route planning needs a proper maps provider and transport data.
 - Login rate limiting is in-memory and best effort. Use a durable shared store before scaling across server instances.

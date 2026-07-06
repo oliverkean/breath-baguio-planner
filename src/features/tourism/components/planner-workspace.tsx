@@ -10,7 +10,6 @@ import {
   LeafIcon,
   MapPinnedIcon,
   RouteIcon,
-  ShieldCheckIcon,
   SparklesIcon,
 } from "lucide-react"
 import { toast } from "sonner"
@@ -153,13 +152,6 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
                 {label}
               </a>
             ))}
-            <a
-              className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
-              href="/admin"
-            >
-              <ShieldCheckIcon className="size-4" />
-              Admin
-            </a>
           </nav>
 
           <Separator className="my-6 hidden lg:block" />
