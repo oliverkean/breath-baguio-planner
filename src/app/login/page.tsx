@@ -1,19 +1,35 @@
 import { redirect } from "next/navigation"
 
 import { LoginForm } from "@/features/auth/login-form"
-import { getCurrentUser } from "@/features/auth/session"
+import { requireAdmin } from "@/features/auth/session"
 
 export default async function LoginPage({
   searchParams,
 }: {
   searchParams: Promise<{ next?: string }>
 }) {
-  const user = await getCurrentUser()
   const { next } = await searchParams
+  const nextPath = normalizeNextPath(next)
+  let isAdmin = false
 
-  if (user?.role === "admin") {
-    redirect(next || "/admin")
+  try {
+    await requireAdmin()
+    isAdmin = true
+  } catch {
+    isAdmin = false
   }
 
-  return <LoginForm nextPath={next || "/admin"} />
+  if (isAdmin) {
+    redirect(nextPath)
+  }
+
+  return <LoginForm nextPath={nextPath} />
+}
+
+function normalizeNextPath(value: string | undefined) {
+  if (!value || !value.startsWith("/") || value.startsWith("//")) {
+    return "/admin"
+  }
+
+  return value
 }

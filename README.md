@@ -14,8 +14,8 @@ Baguio has an official tourism portal, [VISITA](https://visita.baguio.gov.ph/), 
 - OpenAI-backed `/api/itinerary` route when `OPENAI_API_KEY` is configured.
 - Deterministic local itinerary fallback when OpenAI is unavailable.
 - Attraction cards with location, opening hours, tags, car-free guidance, and waste reminders.
-- Admin dashboard for adding attractions, events, advisories, and crowd rules to local MVP state.
-- Supabase-ready schema documented in `docs/database-schema.sql`.
+- Protected admin dashboard for adding attractions, events, advisories, and crowd rules.
+- Supabase Postgres persistence through Drizzle ORM, with Supabase Auth role checks for admins.
 
 ## Run Locally
 
@@ -35,13 +35,16 @@ OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5.5
 DATABASE_URL=
 DIRECT_URL=
+NEXT_PUBLIC_SUPABASE_URL=
+NEXT_PUBLIC_SUPABASE_ANON_KEY=
+SUPABASE_SERVICE_ROLE_KEY=
 ADMIN_EMAIL=
 ADMIN_PASSWORD=
 SESSION_SECRET=
 NEXT_PUBLIC_MAPBOX_TOKEN=
 ```
 
-The app works without these variables by using seed data and local rules.
+The app works without provider variables by using seed data and local rules. Admin login prefers Supabase Auth when `NEXT_PUBLIC_SUPABASE_URL` and `NEXT_PUBLIC_SUPABASE_ANON_KEY` are configured, then falls back to `ADMIN_EMAIL` and `ADMIN_PASSWORD` only for local development.
 
 For provider setup details, see `docs/setup.md`.
 
@@ -50,6 +53,19 @@ Database setup commands:
 ```bash
 npm run db:push
 npm run db:seed
+npm run db:apply-rls
+```
+
+After creating a Supabase Auth user, grant admin access with:
+
+```bash
+npm run db:grant-admin -- admin@example.com
+```
+
+Or create/grant the configured `.env.local` admin user in one step:
+
+```bash
+npm run auth:bootstrap-admin
 ```
 
 ## Architecture
@@ -62,7 +78,7 @@ Backend thinking order used here:
 2. API contract: `POST /api/itinerary`, `GET /api/tourism`.
 3. Validation: normalize itinerary requests and clamp unsafe values.
 4. Service: deterministic local itinerary generator.
-5. Data access: seed repository now, Supabase schema prepared.
+5. Data access: Drizzle repository backed by Supabase Postgres with seed fallback.
 6. Side effects: OpenAI call isolated to the route handler.
 7. Edge cases: missing API key, invalid JSON, failed OpenAI response.
 8. Observability: route returns assumptions explaining source/fallback.
@@ -79,9 +95,8 @@ Backend thinking order used here:
 ## Production Gaps
 
 - Replace seed data with verified VISITA/city tourism data or an approved city-maintained dataset.
-- Add Supabase Auth and role-based admin permissions.
-- Persist admin changes in Postgres with audit fields.
+- Add audit fields for admin changes.
 - Add Mapbox or Google Maps for actual route visualization.
 - Add Philippine holiday and Panagbenga calendars from maintained sources.
-- Add rate limiting and structured logging for itinerary generation.
+- Add durable distributed rate limiting and structured logging for itinerary generation.
 - Add unit tests for crowd scoring and integration tests for route handlers.

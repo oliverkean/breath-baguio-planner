@@ -6,7 +6,7 @@ Build a clean MVP that demonstrates full-stack product thinking without pretendi
 
 ## Current Behavior
 
-The app is a single Next.js App Router application. The home page renders a client workspace with seed tourism data. The itinerary API can call OpenAI through the Responses API when `OPENAI_API_KEY` is set, otherwise it returns a deterministic local-rule itinerary.
+The app is a single Next.js App Router application. The home page renders a client workspace with tourism data loaded from Supabase Postgres through Drizzle, falling back to seed data when the database is unavailable. The itinerary API can call OpenAI through the Responses API when `OPENAI_API_KEY` is set, otherwise it returns a deterministic local-rule itinerary.
 
 ## Modules
 
@@ -21,7 +21,9 @@ The app is a single Next.js App Router application. The home page renders a clie
 - `src/db/schema.ts`: Drizzle table and enum definitions.
 - `src/features/tourism/components/planner-workspace.tsx`: public tourist planning workspace.
 - `src/features/tourism/components/admin-workspace.tsx`: protected admin management surface.
-- `src/features/auth/session.ts`: signed cookie session and role guard for the MVP admin role.
+- `src/features/auth/session.ts`: signed cookie session, Supabase Auth login, and admin role guard.
+- `src/features/auth/repository.ts`: persisted user role lookups.
+- `src/lib/supabase-auth.ts`: server-only Supabase Auth client factory.
 - `src/components/ui/*`: shadcn/ui source components.
 
 ## API Contracts
@@ -75,19 +77,22 @@ Returns seed attractions, events, advisories, and crowd rules.
 
 - Seed attractions and advisories are demo data. Do not treat them as verified official records.
 - Crowd score is a planning heuristic, not a city-approved capacity model.
-- Admin writes require an `admin` session and persist to Supabase Postgres.
+- Admin writes require an `admin` session and persist to Supabase Postgres. Supabase-backed admin sessions re-check `user_roles` during protected access.
 - OpenAI output is constrained by prompt and JSON mode, but still requires server-side validation before production.
 - Map visuals are illustrative. Production route planning needs a proper maps provider and transport data.
+- Login rate limiting is in-memory and best effort. Use a durable shared store before scaling across server instances.
 
 ## Provider Boundaries
 
 - OpenAI is isolated to `src/app/api/itinerary/route.ts`.
 - Supabase Postgres is accessed through Drizzle ORM on the server using `DATABASE_URL`.
+- Supabase Auth is used server-side for password verification. Role authorization is stored in `public.user_roles`.
+- RLS policies in `drizzle/rls.sql` allow public reads and authenticated admin writes for Supabase client access.
 - Mapbox/Google Maps are not imported yet. Use a dedicated map component later rather than mixing provider code into planner state.
 
 ## Follow-Up Design
 
-1. Replace MVP credentials auth with Supabase Auth and persisted user role records.
+1. Add audit fields that record which admin created or updated tourism records.
 2. Validate itinerary requests with a schema library such as Zod.
 3. Validate AI JSON against the same response contract.
 4. Add telemetry for fallback rate, generation latency, and invalid AI output.

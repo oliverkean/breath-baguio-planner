@@ -1,15 +1,17 @@
 import { redirect } from "next/navigation"
 
-import { getCurrentUser } from "@/features/auth/session"
+import { requireAdmin } from "@/features/auth/session"
 import { AdminWorkspace } from "@/features/tourism/components/admin-workspace"
 import { getTourismData } from "@/features/tourism/repository"
 
 export const dynamic = "force-dynamic"
 
 export default async function AdminPage() {
-  const user = await getCurrentUser()
+  let user
 
-  if (user?.role !== "admin") {
+  try {
+    user = await requireAdmin()
+  } catch {
     redirect("/login?next=/admin")
   }
 

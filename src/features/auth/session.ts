@@ -3,11 +3,17 @@ import "server-only"
 import { createHmac, timingSafeEqual } from "node:crypto"
 import { cookies } from "next/headers"
 
+import { getUserRole } from "./repository"
+import { createSupabaseAuthClient, hasSupabaseAuthConfig } from "@/lib/supabase-auth"
+
 export type UserRole = "admin" | "traveler"
+export type AuthProvider = "env" | "supabase"
 
 export type UserSession = {
+  id: string
   email: string
   role: UserRole
+  provider: AuthProvider
 }
 
 const cookieName = "breathe_baguio_session"
@@ -31,6 +37,14 @@ export async function requireAdmin() {
     throw new Error("Admin access is required.")
   }
 
+  if (user.provider === "supabase") {
+    const persistedRole = await getUserRole(user.id)
+
+    if (persistedRole !== "admin") {
+      throw new Error("Admin access is required.")
+    }
+  }
+
   return user
 }
 
@@ -52,7 +66,11 @@ export async function clearSession() {
   cookieStore.delete(cookieName)
 }
 
-export function authenticateAdmin(email: string, password: string): UserSession | null {
+export async function authenticateAdmin(email: string, password: string): Promise<UserSession | null> {
+  if (hasSupabaseAuthConfig()) {
+    return authenticateSupabaseAdmin(email, password)
+  }
+
   const adminEmail = process.env.ADMIN_EMAIL
   const adminPassword = process.env.ADMIN_PASSWORD
 
@@ -69,8 +87,35 @@ export function authenticateAdmin(email: string, password: string): UserSession 
   }
 
   return {
+    id: "env-admin",
     email: adminEmail,
     role: "admin",
+    provider: "env",
+  }
+}
+
+async function authenticateSupabaseAdmin(email: string, password: string): Promise<UserSession | null> {
+  const supabase = createSupabaseAuthClient()
+  const { data, error } = await supabase.auth.signInWithPassword({
+    email: email.trim().toLowerCase(),
+    password,
+  })
+
+  if (error || !data.user) {
+    return null
+  }
+
+  const role = await getUserRole(data.user.id)
+
+  if (role !== "admin") {
+    return null
+  }
+
+  return {
+    id: data.user.id,
+    email: data.user.email ?? email.trim().toLowerCase(),
+    role,
+    provider: "supabase",
   }
 }
 
@@ -94,6 +139,14 @@ function verifySession(value: string): UserSession | null {
 
   try {
     const user = JSON.parse(Buffer.from(payload, "base64url").toString("utf8")) as UserSession
+
+    if (typeof user.id !== "string" || !user.id) {
+      return null
+    }
+
+    if (user.provider !== "env" && user.provider !== "supabase") {
+      return null
+    }
 
     if (user.role !== "admin" && user.role !== "traveler") {
       return null

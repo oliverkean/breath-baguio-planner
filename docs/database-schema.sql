@@ -1,5 +1,13 @@
 create type crowd_level as enum ('low', 'moderate', 'high', 'critical');
 create type advisory_severity as enum ('info', 'warning', 'urgent');
+create type user_role as enum ('admin', 'traveler');
+
+create table user_roles (
+  user_id uuid primary key,
+  role user_role not null default 'traveler',
+  created_at timestamptz not null default now(),
+  updated_at timestamptz not null default now()
+);
 
 create table attractions (
   id uuid primary key default gen_random_uuid(),
@@ -54,9 +62,15 @@ create table crowd_rules (
 );
 
 create index attractions_tags_idx on attractions using gin (tags);
+create index attractions_created_at_name_idx on attractions (created_at, name);
 create index tourism_events_dates_idx on tourism_events (starts_on, ends_on);
+create index tourism_events_starts_on_name_idx on tourism_events (starts_on, name);
 create index advisories_area_idx on advisories (area);
+create index advisories_created_at_title_idx on advisories (created_at, title);
+create index crowd_rules_created_at_label_idx on crowd_rules (created_at, label);
+create index user_roles_role_idx on user_roles (role);
 
+alter table user_roles enable row level security;
 alter table attractions enable row level security;
 alter table tourism_events enable row level security;
 alter table advisories enable row level security;
@@ -67,5 +81,7 @@ create policy "Public can read events" on tourism_events for select using (true)
 create policy "Public can read advisories" on advisories for select using (true);
 create policy "Public can read crowd rules" on crowd_rules for select using (true);
 
--- Production admin writes should require authenticated users with an admin role.
--- Keep service-role mutations on the server only.
+-- Apply the full Supabase Auth role policies from drizzle/rls.sql:
+-- npm run db:apply-rls
+-- Admin writes require authenticated users with an admin role in public.user_roles.
+-- Keep database URLs and service-role credentials server-side only.
