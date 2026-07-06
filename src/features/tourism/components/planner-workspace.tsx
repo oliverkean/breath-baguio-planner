@@ -1,6 +1,6 @@
 "use client"
 
-import { FormEvent, ReactNode, useMemo, useState, useTransition } from "react"
+import { useMemo, useState, useTransition } from "react"
 import {
   AlertTriangleIcon,
   BikeIcon,
@@ -9,7 +9,6 @@ import {
   GaugeIcon,
   LeafIcon,
   MapPinnedIcon,
-  PlusIcon,
   RouteIcon,
   ShieldCheckIcon,
   SparklesIcon,
@@ -43,18 +42,7 @@ import { ToggleGroup, ToggleGroupItem } from "@/components/ui/toggle-group"
 import { Tooltip, TooltipContent, TooltipTrigger } from "@/components/ui/tooltip"
 import { addDays, scoreCrowdForDate, toDateInputValue } from "@/features/tourism/crowd"
 import { generateLocalItinerary, getDefaultItineraryRequest } from "@/features/tourism/itinerary"
-import type {
-  Advisory,
-  Attraction,
-  BudgetLevel,
-  CrowdLevel,
-  CrowdRule,
-  ItineraryRequest,
-  ItineraryResult,
-  TourismData,
-  TourismEvent,
-  TransportMode,
-} from "@/features/tourism/types"
+import type { Attraction, BudgetLevel, CrowdLevel, ItineraryRequest, ItineraryResult, TourismData, TransportMode } from "@/features/tourism/types"
 import { cn } from "@/lib/utils"
 
 type PlannerWorkspaceProps = {
@@ -67,7 +55,6 @@ const navItems = [
   { label: "Planner", icon: RouteIcon },
   { label: "Attractions", icon: MapPinnedIcon },
   { label: "Crowd Calendar", icon: CalendarDaysIcon },
-  { label: "Admin", icon: ShieldCheckIcon },
 ]
 
 const crowdBadgeVariant: Record<CrowdLevel, "secondary" | "outline" | "destructive"> = {
@@ -78,7 +65,7 @@ const crowdBadgeVariant: Record<CrowdLevel, "secondary" | "outline" | "destructi
 }
 
 export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
-  const [tourismData, setTourismData] = useState(initialData)
+  const tourismData = initialData
   const [request, setRequest] = useState<ItineraryRequest>(getDefaultItineraryRequest())
   const [itinerary, setItinerary] = useState<ItineraryResult>(() =>
     generateLocalItinerary(getDefaultItineraryRequest(), initialData)
@@ -141,124 +128,6 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
     })
   }
 
-  function addAttraction(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const name = String(form.get("name") || "").trim()
-    const district = String(form.get("district") || "").trim()
-
-    if (!name || !district) {
-      toast.error("Attraction name and district are required")
-      return
-    }
-
-    const attraction: Attraction = {
-      id: slugify(name),
-      name,
-      district,
-      location: String(form.get("location") || "Admin added location").trim(),
-      openingHours: String(form.get("openingHours") || "Hours to verify").trim(),
-      tags: String(form.get("tags") || "admin")
-        .split(",")
-        .map((tag) => tag.trim())
-        .filter(Boolean),
-      baselineCrowd: "moderate",
-      carFreeHint: "Verify car-free access guidance before publishing.",
-      wasteReminder: "Confirm waste guidance before publishing.",
-      durationHours: 2,
-    }
-
-    setTourismData((current) => ({
-      ...current,
-      attractions: [attraction, ...current.attractions],
-    }))
-    event.currentTarget.reset()
-    toast.success("Attraction added to admin preview")
-  }
-
-  function addEvent(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const name = String(form.get("name") || "").trim()
-    const startsOn = String(form.get("startsOn") || "").trim()
-    const endsOn = String(form.get("endsOn") || startsOn).trim()
-
-    if (!name || !startsOn) {
-      toast.error("Event name and start date are required")
-      return
-    }
-
-    const tourismEvent: TourismEvent = {
-      id: slugify(`${name}-${startsOn}`),
-      name,
-      startsOn,
-      endsOn,
-      impact: "high",
-      notes: String(form.get("notes") || "Admin event needs source verification.").trim(),
-    }
-
-    setTourismData((current) => ({
-      ...current,
-      events: [tourismEvent, ...current.events],
-    }))
-    event.currentTarget.reset()
-    toast.success("Event added to crowd rules")
-  }
-
-  function addAdvisory(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const title = String(form.get("title") || "").trim()
-    const area = String(form.get("area") || "").trim()
-
-    if (!title || !area) {
-      toast.error("Advisory title and area are required")
-      return
-    }
-
-    const advisory: Advisory = {
-      id: slugify(`${title}-${area}`),
-      title,
-      area,
-      severity: "warning",
-      message: String(form.get("message") || "Admin advisory pending review.").trim(),
-    }
-
-    setTourismData((current) => ({
-      ...current,
-      advisories: [advisory, ...current.advisories],
-    }))
-    event.currentTarget.reset()
-    toast.success("Advisory added")
-  }
-
-  function addCrowdRule(event: FormEvent<HTMLFormElement>) {
-    event.preventDefault()
-    const form = new FormData(event.currentTarget)
-    const label = String(form.get("label") || "").trim()
-    const condition = String(form.get("condition") || "").trim()
-    const scoreImpact = Number(form.get("scoreImpact") || 0)
-
-    if (!label || !condition || !Number.isFinite(scoreImpact)) {
-      toast.error("Rule label, condition, and score impact are required")
-      return
-    }
-
-    const rule: CrowdRule = {
-      id: slugify(`${label}-${condition}`),
-      label,
-      condition,
-      scoreImpact,
-    }
-
-    setTourismData((current) => ({
-      ...current,
-      crowdRules: [rule, ...current.crowdRules],
-    }))
-    event.currentTarget.reset()
-    toast.success("Crowd rule added")
-  }
-
   return (
     <div className="min-h-screen bg-background text-foreground">
       <div className="grid min-h-screen grid-cols-1 lg:grid-cols-[17rem_1fr]">
@@ -284,6 +153,13 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
                 {label}
               </a>
             ))}
+            <a
+              className="flex shrink-0 items-center gap-2 rounded-lg px-3 py-2 text-muted-foreground transition hover:bg-sidebar-accent hover:text-sidebar-accent-foreground"
+              href="/admin"
+            >
+              <ShieldCheckIcon className="size-4" />
+              Admin
+            </a>
           </nav>
 
           <Separator className="my-6 hidden lg:block" />
@@ -365,17 +241,6 @@ export function PlannerWorkspace({ initialData }: PlannerWorkspaceProps) {
               <section id="crowd-calendar">
                 <SectionHeading title="Crowd Calendar" description="Rule-based outlook for weekday, weekend, event, and transport pressure." />
                 <CrowdCalendar data={tourismData} request={request} />
-              </section>
-
-              <section id="admin">
-                <SectionHeading title="Admin" description="Manage planning data boundaries for attractions, events, advisories, and crowd rules." />
-                <AdminDashboard
-                  data={tourismData}
-                  onAddAdvisory={addAdvisory}
-                  onAddAttraction={addAttraction}
-                  onAddCrowdRule={addCrowdRule}
-                  onAddEvent={addEvent}
-                />
               </section>
             </div>
           </div>
@@ -701,80 +566,6 @@ function CrowdCalendar({ data, request }: { data: TourismData; request: Itinerar
   )
 }
 
-function AdminDashboard({
-  data,
-  onAddAdvisory,
-  onAddAttraction,
-  onAddCrowdRule,
-  onAddEvent,
-}: {
-  data: TourismData
-  onAddAdvisory: (event: FormEvent<HTMLFormElement>) => void
-  onAddAttraction: (event: FormEvent<HTMLFormElement>) => void
-  onAddCrowdRule: (event: FormEvent<HTMLFormElement>) => void
-  onAddEvent: (event: FormEvent<HTMLFormElement>) => void
-}) {
-  return (
-    <div className="grid gap-5 xl:grid-cols-[26rem_1fr]">
-      <div className="grid gap-5">
-        <AdminFormCard title="Add attraction" onSubmit={onAddAttraction}>
-          <AdminInput label="Name" name="name" placeholder="Mirador Heritage Park" />
-          <AdminInput label="District" name="district" placeholder="Dominican Hill" />
-          <AdminInput label="Location" name="location" placeholder="Exact address or landmark" />
-          <AdminInput label="Opening hours" name="openingHours" placeholder="8:00 AM - 5:00 PM" />
-          <AdminInput label="Tags" name="tags" placeholder="nature, culture, walkable" />
-        </AdminFormCard>
-
-        <AdminFormCard title="Add event" onSubmit={onAddEvent}>
-          <AdminInput label="Name" name="name" placeholder="Flower parade weekend" />
-          <div className="grid gap-3 sm:grid-cols-2">
-            <AdminInput label="Starts on" name="startsOn" type="date" />
-            <AdminInput label="Ends on" name="endsOn" type="date" />
-          </div>
-          <AdminInput label="Notes" name="notes" placeholder="Road closure or demand note" />
-        </AdminFormCard>
-
-        <AdminFormCard title="Add advisory" onSubmit={onAddAdvisory}>
-          <AdminInput label="Title" name="title" placeholder="Avoid CBD parking" />
-          <AdminInput label="Area" name="area" placeholder="Session Road" />
-          <AdminInput label="Message" name="message" placeholder="Use walkable transfer points." />
-        </AdminFormCard>
-
-        <AdminFormCard title="Add crowd rule" onSubmit={onAddCrowdRule}>
-          <AdminInput label="Label" name="label" placeholder="Long weekend surge" />
-          <AdminInput label="Condition" name="condition" placeholder="Holiday bridge dates" />
-          <AdminInput label="Score impact" name="scoreImpact" placeholder="18" type="number" />
-        </AdminFormCard>
-      </div>
-
-      <Card>
-        <CardHeader>
-          <CardTitle>Admin data preview</CardTitle>
-          <CardDescription>These records are local MVP state. Wire this boundary to Supabase for production.</CardDescription>
-        </CardHeader>
-        <CardContent className="grid gap-6">
-          <PreviewTable
-            columns={["Attraction", "District", "Crowd"]}
-            rows={data.attractions.map((attraction) => [
-              attraction.name,
-              attraction.district,
-              attraction.baselineCrowd,
-            ])}
-          />
-          <PreviewTable
-            columns={["Event", "Dates", "Impact"]}
-            rows={data.events.map((event) => [event.name, `${event.startsOn} to ${event.endsOn}`, event.impact])}
-          />
-          <PreviewTable
-            columns={["Rule", "Condition", "Impact"]}
-            rows={data.crowdRules.map((rule) => [rule.label, rule.condition, `${rule.scoreImpact}`])}
-          />
-        </CardContent>
-      </Card>
-    </div>
-  )
-}
-
 function GuidanceCard({
   icon: Icon,
   items,
@@ -806,77 +597,6 @@ function GuidanceCard({
   )
 }
 
-function AdminFormCard({
-  children,
-  onSubmit,
-  title,
-}: {
-  children: ReactNode
-  onSubmit: (event: FormEvent<HTMLFormElement>) => void
-  title: string
-}) {
-  return (
-    <Card>
-      <CardHeader>
-        <CardTitle>{title}</CardTitle>
-      </CardHeader>
-      <CardContent>
-        <form className="grid gap-4" onSubmit={onSubmit}>
-          {children}
-          <Button type="submit">
-            <PlusIcon data-icon="inline-start" />
-            Add
-          </Button>
-        </form>
-      </CardContent>
-    </Card>
-  )
-}
-
-function AdminInput({
-  label,
-  name,
-  placeholder,
-  type = "text",
-}: {
-  label: string
-  name: string
-  placeholder?: string
-  type?: string
-}) {
-  return (
-    <Field>
-      <FieldLabel htmlFor={name}>{label}</FieldLabel>
-      <Input id={name} name={name} placeholder={placeholder} type={type} />
-    </Field>
-  )
-}
-
-function PreviewTable({ columns, rows }: { columns: string[]; rows: string[][] }) {
-  return (
-    <Table>
-      <TableHeader>
-        <TableRow>
-          {columns.map((column) => (
-            <TableHead key={column}>{column}</TableHead>
-          ))}
-        </TableRow>
-      </TableHeader>
-      <TableBody>
-        {rows.slice(0, 6).map((row) => (
-          <TableRow key={row.join("-")}>
-            {row.map((cell, index) => (
-              <TableCell className={cn(index === 0 && "font-medium")} key={`${cell}-${index}`}>
-                {cell}
-              </TableCell>
-            ))}
-          </TableRow>
-        ))}
-      </TableBody>
-    </Table>
-  )
-}
-
 function Metric({ label, value }: { label: string; value: number }) {
   return (
     <div className="rounded-lg border px-3 py-2">
@@ -884,13 +604,4 @@ function Metric({ label, value }: { label: string; value: number }) {
       <p className="text-xs text-muted-foreground">{label}</p>
     </div>
   )
-}
-
-function slugify(value: string) {
-  const slug = value
-    .toLowerCase()
-    .replace(/[^a-z0-9]+/g, "-")
-    .replace(/(^-|-$)/g, "")
-
-  return slug || `item-${Date.now()}`
 }

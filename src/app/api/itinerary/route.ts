@@ -1,6 +1,6 @@
 import { generateLocalItinerary, normalizeItineraryRequest } from "@/features/tourism/itinerary"
-import { tourismData } from "@/features/tourism/data"
-import type { ItineraryRequest, ItineraryResult } from "@/features/tourism/types"
+import { getTourismData } from "@/features/tourism/repository"
+import type { ItineraryRequest, ItineraryResult, TourismData } from "@/features/tourism/types"
 
 export const runtime = "nodejs"
 
@@ -24,6 +24,7 @@ export async function POST(request: Request) {
   }
 
   const itineraryRequest = normalizeItineraryRequest(body)
+  const tourismData = await getTourismData()
   const fallback = generateLocalItinerary(itineraryRequest, tourismData)
 
   if (!process.env.OPENAI_API_KEY) {
@@ -37,7 +38,7 @@ export async function POST(request: Request) {
   }
 
   try {
-    const generated = await generateOpenAIItinerary(itineraryRequest, fallback)
+    const generated = await generateOpenAIItinerary(itineraryRequest, fallback, tourismData)
 
     return Response.json(generated)
   } catch (error) {
@@ -52,7 +53,8 @@ export async function POST(request: Request) {
 
 async function generateOpenAIItinerary(
   request: ItineraryRequest,
-  fallback: ItineraryResult
+  fallback: ItineraryResult,
+  tourismData: TourismData
 ): Promise<ItineraryResult> {
   const response = await fetch("https://api.openai.com/v1/responses", {
     method: "POST",

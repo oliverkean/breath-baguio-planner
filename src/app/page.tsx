@@ -1,6 +1,10 @@
 import { PlannerWorkspace } from "@/features/tourism/components/planner-workspace"
-import { tourismData } from "@/features/tourism/data"
+import { getTourismData } from "@/features/tourism/repository"
 
-export default function Home() {
+export const dynamic = "force-dynamic"
+
+export default async function Home() {
+  const tourismData = await getTourismData()
+
   return <PlannerWorkspace initialData={tourismData} />
 }

@@ -33,15 +33,24 @@ Create `.env.local` when using provider-backed features:
 ```bash
 OPENAI_API_KEY=
 OPENAI_MODEL=gpt-5.5
+DATABASE_URL=
+DIRECT_URL=
+ADMIN_EMAIL=
+ADMIN_PASSWORD=
+SESSION_SECRET=
 NEXT_PUBLIC_MAPBOX_TOKEN=
-NEXT_PUBLIC_SUPABASE_URL=
-NEXT_PUBLIC_SUPABASE_ANON_KEY=
-SUPABASE_SERVICE_ROLE_KEY=
 ```
 
 The app works without these variables by using seed data and local rules.
 
 For provider setup details, see `docs/setup.md`.
+
+Database setup commands:
+
+```bash
+npm run db:push
+npm run db:seed
+```
 
 ## Architecture
 
