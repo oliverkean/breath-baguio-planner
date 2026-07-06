@@ -23,6 +23,11 @@ export const metadata: Metadata = {
   title: "Breathe Baguio Planner",
   description:
     "AI-assisted sustainable tourism planner for Baguio itineraries, crowd scoring, car-light routing, and admin advisories.",
+  icons: {
+    icon: "/favicon.ico",
+    shortcut: "/favicon.ico",
+    apple: "/favicon-preview.png",
+  },
 };
 
 export default function RootLayout({

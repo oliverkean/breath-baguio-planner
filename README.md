@@ -41,6 +41,8 @@ SUPABASE_SERVICE_ROLE_KEY=
 
 The app works without these variables by using seed data and local rules.
 
+For provider setup details, see `docs/setup.md`.
+
 ## Architecture
 
 See `docs/architecture.md`.
